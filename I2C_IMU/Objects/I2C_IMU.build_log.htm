@@ -1,0 +1,150 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.31.0.0
+Copyright (C) 2020 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Henry Odoemelem, University of Siegen, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.31.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCLANG\Bin
+C Compiler:      ArmClang.exe V6.14
+Assembler:       Armasm.exe V6.14
+Linker/Locator:  ArmLink.exe V6.14
+Library Manager: ArmAr.exe V6.14
+Hex Converter:   FromElf.exe V6.14
+CPU DLL:         SARMCM3.DLL V5.31.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.7.0
+Dialog DLL:      TCM.DLL V1.46.0.0
+ 
+<h2>Project:</h2>
+C:\Users\HENRY ODOEMELEM\Pictures\DOC\USIEGEN\MasterThesis\STM32\Bare-Metal\I2C_IMU\I2C_IMU.uvprojx
+Project File Date:  09/22/2020
+
+<h2>Output:</h2>
+*** Using Compiler 'V6.14', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
+Build target 'stm32l4'
+main.c(78): warning: while loop has empty body [-Wempty-body]
+        while(!(I2C1->ISR & 1<<0));   // wait until trasnmit buffer is empty rm pg1336
+                                  ^
+main.c(78): note: put the semicolon on a separate line to silence this warning
+main.c(88): warning: while loop has empty body [-Wempty-body]
+        while(!(I2C1->ISR & 1<<15));  // wait until start condition is set rm pg1333
+                                   ^
+main.c(88): note: put the semicolon on a separate line to silence this warning
+main.c(166): warning: no newline at end of file [-Wnewline-eof]
+}
+ ^
+main.c(23): warning: no previous extern declaration for non-static variable 'accXD' [-Wmissing-variable-declarations]
+int accXD,accYD,accZD;
+    ^
+main.c(23): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int accXD,accYD,accZD;
+^
+main.c(23): warning: no previous extern declaration for non-static variable 'accYD' [-Wmissing-variable-declarations]
+int accXD,accYD,accZD;
+          ^
+main.c(23): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int accXD,accYD,accZD;
+^
+main.c(23): warning: no previous extern declaration for non-static variable 'accZD' [-Wmissing-variable-declarations]
+int accXD,accYD,accZD;
+                ^
+main.c(23): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int accXD,accYD,accZD;
+^
+main.c(24): warning: no previous extern declaration for non-static variable 'gyroXD' [-Wmissing-variable-declarations]
+int gyroXD,gyroYD,gyroZD;
+    ^
+main.c(24): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int gyroXD,gyroYD,gyroZD;
+^
+main.c(24): warning: no previous extern declaration for non-static variable 'gyroYD' [-Wmissing-variable-declarations]
+int gyroXD,gyroYD,gyroZD;
+           ^
+main.c(24): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int gyroXD,gyroYD,gyroZD;
+^
+main.c(24): warning: no previous extern declaration for non-static variable 'gyroZD' [-Wmissing-variable-declarations]
+int gyroXD,gyroYD,gyroZD;
+                  ^
+main.c(24): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+int gyroXD,gyroYD,gyroZD;
+^
+main.c(26): warning: no previous extern declaration for non-static variable 'accX' [-Wmissing-variable-declarations]
+double accX,accY,accZ;
+       ^
+main.c(26): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+double accX,accY,accZ;
+^
+main.c(26): warning: no previous extern declaration for non-static variable 'accY' [-Wmissing-variable-declarations]
+double accX,accY,accZ;
+            ^
+main.c(26): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+double accX,accY,accZ;
+^
+main.c(26): warning: no previous extern declaration for non-static variable 'accZ' [-Wmissing-variable-declarations]
+double accX,accY,accZ;
+                 ^
+main.c(26): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+double accX,accY,accZ;
+^
+main.c(27): warning: no previous extern declaration for non-static variable 'gyroX' [-Wmissing-variable-declarations]
+double gyroX,gyroY,gyroZ;
+       ^
+main.c(27): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+double gyroX,gyroY,gyroZ;
+^
+main.c(27): warning: no previous extern declaration for non-static variable 'gyroY' [-Wmissing-variable-declarations]
+double gyroX,gyroY,gyroZ;
+             ^
+main.c(27): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+double gyroX,gyroY,gyroZ;
+^
+main.c(27): warning: no previous extern declaration for non-static variable 'gyroZ' [-Wmissing-variable-declarations]
+double gyroX,gyroY,gyroZ;
+                   ^
+main.c(27): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+double gyroX,gyroY,gyroZ;
+^
+15 warnings generated.
+compiling main.c...
+linking...
+Program Size: Code=1792 RO-data=408 RW-data=0 ZI-data=1728  
+".\Objects\I2C_IMU.axf" - 0 Error(s), 15 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.7.0.pack
+                ARM.CMSIS.5.7.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.4.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32L4xx_DFP.2.4.0.pack
+                Keil.STM32L4xx_DFP.2.4.0
+                STMicroelectronics STM32L4 Series Device Support, Drivers and Examples
+   * Component: Startup Version: 1.3.1
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_stm32l4
+  C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include
+  C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.4.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.4.0
+
+   * Component: Keil::Device:Startup:1.3.1
+      Include file:  Drivers\CMSIS\Device\ST\STM32L4xx\Include\stm32l4xx.h
+      Source file:   MDK\Device\Source\ARM\STM32L4xx_DB_OPT.s
+      Source file:   Drivers\CMSIS\Device\ST\STM32L4xx\Source\Templates\arm\startup_stm32l476xx.s
+      Source file:   Drivers\CMSIS\Device\ST\STM32L4xx\Source\Templates\system_stm32l4xx.c
+Build Time Elapsed:  00:00:02
+</pre>
+</body>
+</html>

@@ -1,9 +1,12 @@
 #include "stm32l4xx.h"                  // Device header
 
-#define IMU_ADW 0xD4      
-#define IMU_ADR 0xD5
+#define IMU_ADW 0xD6      
+#define IMU_ADR 0xD7
 #define G_STAD 0x18   // gyro start address
-
+#define G_SEN  0.00875  // +- 245 dps
+#define A_SEN  0.000061  // +-2g 
+#define CTRL_REG1_G 0x10
+#define REG1_DATA    0x40 // for ODR 59.5hz,cuttoff freq 16 hz and gyro FS 245 dps
 void SysClock_Config(void);
 void systickDelayMS(int n);
 
@@ -15,28 +18,38 @@ void i2c_write(char);
 char i2c_read(void);
 void IMU_Config(char,char,char);
 void IMU_readRequest(char,char,char);
-char IMU_read(void);
+int  IMU_read(void);
 
-int accX,accY,accZ;
-int gyroX,gyroY,gyroZ;
+int accXD,accYD,accZD;
+int gyroXD,gyroYD,gyroZD;
 
+double accX,accY,accZ;
+double gyroX,gyroY,gyroZ;
 
 int main(void)
 {
 	SysClock_Config();
 	i2c_init();
-  //IMU_Config(SADW,char regAddr,char data);
-	//IMU_Config(IMU_ADW,,);
+	IMU_Config(IMU_ADW,CTRL_REG1_G,REG1_DATA);
   IMU_readRequest(IMU_ADW,IMU_ADR,G_STAD);
 	while(1)
 	{
-	 // L>>8|H<<8;
-	 gyroX = IMU_read()>>8|IMU_read()<<8; 
-	 gyroY = IMU_read()>>8|IMU_read()<<8;
-   gyroZ = IMU_read()>>8|IMU_read()<<8;
-	 accX = IMU_read()>>8|IMU_read()<<8;
-   accY = IMU_read()>>8|IMU_read()<<8;
-	 accZ = IMU_read()>>8|IMU_read()<<8;
+		// Digital values: L>>8|H<<8;
+	 gyroXD = IMU_read()>>8|IMU_read()<<8; 
+	 gyroYD = IMU_read()>>8|IMU_read()<<8;
+   gyroZD = IMU_read()>>8|IMU_read()<<8;
+	 accXD = IMU_read()>>8|IMU_read()<<8;
+   accYD = IMU_read()>>8|IMU_read()<<8;
+	 accZD = IMU_read()>>8|IMU_read()<<8;
+		
+	 //Analog values
+	 gyroX = gyroXD*G_SEN; 
+	 gyroY = gyroYD*G_SEN;
+   gyroZ = gyroZD*G_SEN;
+	 accX = accXD * A_SEN;
+   accY = accYD* A_SEN;
+	 accZ = accZD* A_SEN;
+	 
 	}
 	
 }
@@ -112,11 +125,12 @@ void IMU_readRequest(char sadw,char sadr,char regAddr)
 	i2c_start(sadw,regAddr);
 	i2c_rep_start(sadr);
 }
-
-char IMU_read(void)
+ 
+int IMU_read(void)
 {
-   return i2c_read();
+   return (int)i2c_read();
 }
+
 void systickDelayMS(int n)
 {
 	// Based  on 16MHz clk
