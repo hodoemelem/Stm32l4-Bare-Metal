@@ -1,0 +1,27 @@
+Dependencies for Project 'blinky', Target 'stm32l4': (DO NOT MODIFY !)
+CompilerVersion: 6140000::V6.14::ARMCLANG
+F (.\main.c)(0x5F464C48)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-3 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_stm32l4-I"C:/Users/HENRY ODOEMELEM/AppData/Local/Arm/Packs/ARM/CMSIS/5.7.0/CMSIS/Core/Include"-I"C:/Users/HENRY ODOEMELEM/AppData/Local/Arm/Packs/Keil/STM32L4xx_DFP/2.4.0/Drivers/CMSIS/Device/ST/STM32L4xx/Include"-D__UVISION_VERSION="531" -D_RTE_ -DSTM32L476xx -D_RTE_-o ./objects/main.o -MD)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.4.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include\stm32l4xx.h)(0x5E687484)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.4.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include\stm32l476xx.h)(0x5E687484)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\core_cm4.h)(0x5E8F2582)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x5ED66044)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_version.h)(0x5E8F2582)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5E835B22)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_armclang.h)(0x5E8F2582)
+I (C:\Keil_v5\ARM\ARMCLANG\include\arm_compat.h)(0x5E0D174C)
+I (C:\Keil_v5\ARM\ARMCLANG\include\arm_acle.h)(0x5E0D1778)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\mpu_armv7.h)(0x5E8F2582)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.4.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include\system_stm32l4xx.h)(0x5E687484)
+F (RTE\Device\STM32L476RGTx\startup_stm32l476xx.s)(0x5E687484)(--target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -masm=auto -c-gdwarf-3 -Wa,armasm,--pd,"__EVAL SETA 1"-I./RTE/_stm32l4-I"C:/Users/HENRY ODOEMELEM/AppData/Local/Arm/Packs/ARM/CMSIS/5.7.0/CMSIS/Core/Include"-I"C:/Users/HENRY ODOEMELEM/AppData/Local/Arm/Packs/Keil/STM32L4xx_DFP/2.4.0/Drivers/CMSIS/Device/ST/STM32L4xx/Include"-Wa,armasm,--pd,"__UVISION_VERSION SETA 531" -Wa,armasm,--pd,"_RTE_ SETA 1" -Wa,armasm,--pd,"STM32L476xx SETA 1" -Wa,armasm,--pd,"_RTE_ SETA 1"-o ./objects/startup_stm32l476xx.o)
+F (RTE\Device\STM32L476RGTx\system_stm32l4xx.c)(0x5E687484)(-xc -std=c99 --target=arm-arm-none-eabi -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -c-fno-rtti -funsigned-char -fshort-enums -fshort-wchar-D__EVAL -gdwarf-3 -O1 -ffunction-sections -Weverything -Wno-packed -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -I./RTE/_stm32l4-I"C:/Users/HENRY ODOEMELEM/AppData/Local/Arm/Packs/ARM/CMSIS/5.7.0/CMSIS/Core/Include"-I"C:/Users/HENRY ODOEMELEM/AppData/Local/Arm/Packs/Keil/STM32L4xx_DFP/2.4.0/Drivers/CMSIS/Device/ST/STM32L4xx/Include"-D__UVISION_VERSION="531" -D_RTE_ -DSTM32L476xx -D_RTE_-o ./objects/system_stm32l4xx.o -MD)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.4.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include\stm32l4xx.h)(0x5E687484)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.4.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include\stm32l476xx.h)(0x5E687484)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\core_cm4.h)(0x5E8F2582)
+I (C:\Keil_v5\ARM\ARMCLANG\include\stdint.h)(0x5ED66044)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_version.h)(0x5E8F2582)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_compiler.h)(0x5E835B22)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\cmsis_armclang.h)(0x5E8F2582)
+I (C:\Keil_v5\ARM\ARMCLANG\include\arm_compat.h)(0x5E0D174C)
+I (C:\Keil_v5\ARM\ARMCLANG\include\arm_acle.h)(0x5E0D1778)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include\mpu_armv7.h)(0x5E8F2582)
+I (C:\Users\HENRY ODOEMELEM\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.4.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include\system_stm32l4xx.h)(0x5E687484)
