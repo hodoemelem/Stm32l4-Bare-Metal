@@ -27,22 +27,22 @@ Project File Date:  09/22/2020
 <h2>Output:</h2>
 *** Using Compiler 'V6.14', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
 Build target 'stm32l4'
-main.c(53): warning: implicit conversion loses integer precision: 'int' to 'int16_t' (aka 'short') [-Wimplicit-int-conversion]
-         accZD = i2c_readByte(IMU_ADW,0x3F)<<8|i2c_readByte(IMU_ADW,0x40);
-               ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
-main.c(79): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+main.c(54): warning: implicit conversion loses integer precision: 'int' to 'int16_t' (aka 'short') [-Wimplicit-int-conversion]
+                accZD = i2c_readByte(IMU_ADW,0x3F)<<8|i2c_readByte(IMU_ADW,0x40); //combine bytes: MSBytes<<8|LSBytes
+                      ~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+main.c(80): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
         I2C1->CR2 &=~(1<<10);        // write mode
                   ~~^~~~~~~~
-main.c(81): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+main.c(82): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
         I2C1->CR2 &=~ (1<<25);       // software end mode ie 0
                   ~~^~~~~~~~~
-main.c(125): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+main.c(126): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
         I2C1->CR2 &=~(1<<10);        // write mode
                   ~~^~~~~~~~
-main.c(127): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+main.c(128): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
         I2C1->CR2 &=~ (1<<25);       // software end mode ie 0
                   ~~^~~~~~~~~
-main.c(182): warning: no newline at end of file [-Wnewline-eof]
+main.c(183): warning: no newline at end of file [-Wnewline-eof]
 }
  ^
 main.c(21): warning: no previous extern declaration for non-static variable 'accXD' [-Wmissing-variable-declarations]
@@ -157,7 +157,7 @@ Package Vendor: Keil
       Source file:   MDK\Device\Source\ARM\STM32L4xx_DB_OPT.s
       Source file:   Drivers\CMSIS\Device\ST\STM32L4xx\Source\Templates\system_stm32l4xx.c
       Source file:   Drivers\CMSIS\Device\ST\STM32L4xx\Source\Templates\arm\startup_stm32l476xx.s
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

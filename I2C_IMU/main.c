@@ -50,8 +50,9 @@ int main(void)
 		
 	while(1)
 	{
-	 accZD = i2c_readByte(IMU_ADW,0x3F)<<8|i2c_readByte(IMU_ADW,0x40);
-	 accZ  = (double)accZD/16384.0;
+		//Read z axis of accelerometer to get g value (+1g means the top of IMU is facing up)
+		accZD = i2c_readByte(IMU_ADW,0x3F)<<8|i2c_readByte(IMU_ADW,0x40); //combine bytes: MSBytes<<8|LSBytes
+	  accZ  = (double)accZD/16384.0;     // convert to g, 16384.0 is sensitvity value at +-2g fullscale
 	}
 	
 }
