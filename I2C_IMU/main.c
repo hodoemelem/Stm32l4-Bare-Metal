@@ -1,135 +1,151 @@
+/*
+*Author : Henry Ugochukwu Odoemelem
+*Description: stm32L4 Code to read data from MPU6050 IMU using 12C1 on pins PB6(scl) and PB7(sda)
+*Date: 23 Sept. 2020
+*/
+
 #include "stm32l4xx.h"                  // Device header
 
-#define IMU_ADW 0xD6      
-#define IMU_ADR 0xD7
-#define G_STAD 0x18   // gyro start address
-#define G_SEN  0.00875  // +- 245 dps
-#define A_SEN  0.000061  // +-2g 
-#define CTRL_REG1_G 0x10
-#define REG1_DATA    0x40 // for ODR 59.5hz,cuttoff freq 16 hz and gyro FS 245 dps
+// MPU6050 Device adress
+#define IMU_ADW 0xD0     // write  
+#define IMU_ADR 0xD1     // read
+
+
 void SysClock_Config(void);
 void systickDelayMS(int n);
 
 void i2c_init(void);
-void i2c_start(char,char);
-void i2c_rep_start(char);
-void i2c_stop(void);
-void i2c_write(char);
-char i2c_read(void);
-void IMU_Config(char,char,char);
-void IMU_readRequest(char,char,char);
-int  IMU_read(void);
+int16_t i2c_readByte(char saddr,char maddr);
+void i2c_writeByte(char saddr,char maddr,char wdata);
 
-int accXD,accYD,accZD;
-int gyroXD,gyroYD,gyroZD;
+int16_t accXD,accYD,accZD;
+int16_t gyroXD,gyroYD,gyroZD;
 
 double accX,accY,accZ;
 double gyroX,gyroY,gyroZ;
 
+int16_t rdata;
+
 int main(void)
 {
 	SysClock_Config();
+	
+	// for LED 
+	RCC->AHB2ENR |= (1<<0);       // enable GPIOA clk, port A is Bit 0 on the register
+	GPIOA->MODER = 0xABFFF7FF;    // ie ... 0111 1111 1111 MODE5 is PA5, 01 for output
+	GPIOA->BSRR  = 1<<(5+16);     //or use 0x00200000;   // reset PA5 low
+	
+	
 	i2c_init();
-	IMU_Config(IMU_ADW,CTRL_REG1_G,REG1_DATA);
-  IMU_readRequest(IMU_ADW,IMU_ADR,G_STAD);
+	
+	// set default values of these registers in MPU6050
+  i2c_writeByte(IMU_ADW,0x1C,0);
+	GPIOA->BSRR  = 1<<(5+16);     // LED off
+	i2c_writeByte(IMU_ADW,0x6B,0);
+	GPIOA->BSRR  = 1<<(5+16);
+	i2c_writeByte(IMU_ADW,0x6C,0);
+	GPIOA->BSRR  = 1<<(5+16);
+	i2c_writeByte(IMU_ADW,0x19,0);
+	GPIOA->BSRR  = 1<<(5+16);
+		
 	while(1)
 	{
-		// Digital values: L>>8|H<<8;
-	 gyroXD = IMU_read()>>8|IMU_read()<<8; 
-	 gyroYD = IMU_read()>>8|IMU_read()<<8;
-   gyroZD = IMU_read()>>8|IMU_read()<<8;
-	 accXD = IMU_read()>>8|IMU_read()<<8;
-   accYD = IMU_read()>>8|IMU_read()<<8;
-	 accZD = IMU_read()>>8|IMU_read()<<8;
-		
-	 //Analog values
-	 gyroX = gyroXD*G_SEN; 
-	 gyroY = gyroYD*G_SEN;
-   gyroZ = gyroZD*G_SEN;
-	 accX = accXD * A_SEN;
-   accY = accYD* A_SEN;
-	 accZ = accZD* A_SEN;
-	 
+	 accZD = i2c_readByte(IMU_ADW,0x3F)<<8|i2c_readByte(IMU_ADW,0x40);
+	 accZ  = (double)accZD/16384.0;
 	}
 	
 }
 
 void i2c_init(void)
 {
-RCC->AHB2ENR|= 1<<1; //enable gpiob clock rm pg251
-RCC->APB1ENR1|= 1<<21; //enable i2c1 clock rm pg253
-GPIOB->MODER|=0xFFFAFEBF; //set pb8and9 to alternative function rm pg305
-GPIOB->AFR[1]|=0x44;     // AF4 12C on pb8 and 9 rm pg310, uCds pg93
-GPIOB->OTYPER|=0x300;    // pb8 and 9 output open drain rm pg306
-GPIOB->PUPDR = 0x50100;  // pb8 and 9 pull-up, rm pg307
-I2C1->CR1 = 0x0000;  // PE cleared, SWresest rm pg1325
-I2C1->TIMEOUTR = 0x00303D5B; // (standard mode) I2C freq 100KHz @ 16MHz clk from stm32CubeMX and rm pg1331
-while(I2C1->CR1 & 1<<0);  // wait for at least 3 APB clock cycle b4 set rm pg 1325
-I2C1->CR1|=0x01;          // set PE 
+RCC->AHB2ENR|= 1<<1;        //enable gpiob clock rm pg251
+RCC->APB1ENR1|= 1<<21;      //enable i2c1 clock rm pg253
+GPIOB->MODER = 0xFFFFAEBF;  //set pb6and7 to alternative function rm pg305
+GPIOB->AFR[0] =0x44000000;  // AF4 12C on pb6 and 7 rm pg310, uCds pg93
+GPIOB->OTYPER =0xC0;        // pb6 and 7 output open drain rm pg306
+GPIOB->PUPDR = 0x5100;      // pb6 and 7 pull-up, rm pg307
 }
-void i2c_start(char sadw,char regAddr)
+
+int16_t i2c_readByte(char saddr,char maddr)
 {
-	while(I2C1->ISR & 1<<15); // wait until bus is not busy rm pg1333
+	//PE set and reset
+	I2C1->CR1 = 0x0000;          // PE cleared, SWresest rm pg1325
+	I2C1->TIMINGR = 0x10320309;  // I2C at 400kHz from uCds
+  while(I2C1->CR1 & 1<<0);     // wait for at least 3 APB clock cycle b4 set rm pg 1325
+  I2C1->CR1|=0x01;             // set PE
 	
-	I2C1->CR2 = 1<<13;    // start condition rm pg1327
-	while(!(I2C1->ISR & 1<<15));  // wait until start condition is set rm pg1333
+  //start and send slave address +write mode
+	I2C1->CR2 = saddr;           // slave address
+	I2C1->CR2 &=~(1<<10);        // write mode
+	I2C1->CR2 |= 1<<16;          // NBTYES transmit 1 byte
+	I2C1->CR2 &=~ (1<<25);       // software end mode ie 0
+	while(I2C1->ISR & 1<<15);    // wait until bus is not busy rm pg1333
+	I2C1->CR2 |= 1<<13;          // start condition rm pg1327
+	while((I2C1->CR2 & 1<<13));  // wait until start bit is reset, meaning address sent
 	
-	I2C1->TXDR = sadw;        // transmit slave address +write, rm pg1337
-	while(!(I2C1->ISR & 1<<0));   // wait until trasnmit buffer is empty rm pg1336
-
-  I2C1->TXDR = regAddr;    // transmit register address
-	while(!(I2C1->ISR & 1<<0));   // wait until transmit buffer is empty rm pg1336
-
-}
-
-void i2c_rep_start(char sadr)
-{
-  I2C1->CR2 = 1<<13;    // Restart condition rm pg1327
-	while(!(I2C1->ISR & 1<<15));  // wait until start condition is set rm pg1333
+	//send register address
+	while(!(I2C1->ISR & 1<<1));  // wait until transmit buffer is empty rm pg1336
+	I2C1->TXDR = maddr;          // transmit register address
+	while(!(I2C1->ISR & 1<<6));  // wait until NBTYES is transferred
 	
-  I2C1->TXDR = sadr;        // transmit slave address +read, rm pg1337
-	while(!(I2C1->ISR & 1<<0));   // wait until trasnmit buffer is empty rm pg1336
+	
+	
+	//Start Repeat and send slave address + read mode
+	I2C1->CR2 = saddr;          // slave address
+	I2C1->CR2 |= 1<<10;         // read mode
+	I2C1->CR2 |= 1<<16;         // read 1 byte
+	I2C1->CR2 |= 1<<25;         // automatic end mode ie 1
+	I2C1->CR2 |= 1<<13;         // start condition rm pg1327
+	while((I2C1->CR2 & 1<<13)); // wait until start bit is reset, meaning address sent
+	
+	
+	//read register data
+	while(!(I2C1->ISR & 1<<2));    // wait until receive buffer has data
+	rdata = (int16_t)(I2C1->RXDR); // read the rx buffer
+	
+	//Blink LED on PA5 at every read
+	GPIOA->BSRR  = (1<<5);
+	systickDelayMS(100);
+	GPIOA->BSRR  = 1<<(5+16);
+	systickDelayMS(100);
+	
+	return rdata;
 }
 
-
-
-void i2c_write(char data )
+void i2c_writeByte(char saddr,char maddr,char wdata)
 {
-	I2C1->TXDR =  data;        // transmit slave address +read, rm pg1337
-	while(!(I2C1->ISR & 1<<0));   // wait until trasnmit buffer is empty rm pg1336
+  //PE set and reset
+	I2C1->CR1 = 0x0000;          // PE cleared, SWresest rm pg1325
+	I2C1->TIMINGR = 0x10320309;  // I2C at 400kHz from uCds
+  while(I2C1->CR1 & 1<<0);     // wait for at least 3 APB clock cycle b4 set rm pg 1325
+  I2C1->CR1|=0x01;             // set PE
+	
+	//start and send slave address +write mode
+	I2C1->CR2 = saddr;           // slave address
+	I2C1->CR2 &=~(1<<10);        // write mode
+	I2C1->CR2 |= 2<<16;          // NBTYES transmit 2 byte
+	I2C1->CR2 &=~ (1<<25);       // software end mode ie 0
+	while(I2C1->ISR & 1<<15);    // wait until bus is not busy rm pg1333
+	I2C1->CR2 |= 1<<13;          // start condition rm pg1327
+	while((I2C1->CR2 & 1<<13));  // wait until start bit is reset, meaning address sent
+	
+	//send/select register address
+	while(!(I2C1->ISR & 1<<1));  // wait until transmit buffer is empty rm pg1336
+	I2C1->TXDR = maddr;          // transmit register address
+	
+	//send data to register
+	while(!(I2C1->ISR & 1<<1));  // wait until transmit buffer is empty rm pg1336
+	I2C1->TXDR = wdata;          // send data to register
+	
+	//Manual stop condition
+	while(!(I2C1->ISR & 1<<6));  // wait until NBTYES is transferred ie TC = 1
+	I2C1->CR2 |= 1<<14;          // stop condition
+	while((I2C1->ISR & 1<<6));   // TC = 0 at stop condition
+	
+	//LED on after each write
+	GPIOA->BSRR  = (1<<5);
 }
 
-char i2c_read(void)
-{
-	char data;
-	while(!(I2C1->ISR & 1<<2));   // wait until receive buffer has data
-	data = (char)I2C1->RXDR;            // read the rx buffer
-	return data;
-}
-
-void i2c_stop(void)
-{
-	I2C1->CR2 = 1<<14;  // stop condition, also NACK is sent rm pg1327
-	while(I2C1->ISR & 1<<15); // wait until bus is not busy rm pg1333
-}
-
-void IMU_Config(char sadw,char regAddr,char data)
-{
-	i2c_start(sadw,regAddr);
-	i2c_write(data );
-	i2c_stop();
-}
-
-void IMU_readRequest(char sadw,char sadr,char regAddr)
-{
-	i2c_start(sadw,regAddr);
-	i2c_rep_start(sadr);
-}
- 
-int IMU_read(void)
-{
-   return (int)i2c_read();
-}
 
 void systickDelayMS(int n)
 {
