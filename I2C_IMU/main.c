@@ -15,11 +15,15 @@ void SysClock_Config(void);
 void systickDelayMS(int n);
 
 void i2c_init(void);
-int16_t i2c_readByte(char saddr,char maddr);
-void i2c_writeByte(char saddr,char maddr,char wdata);
+void i2c_resetISR(void);
+void i2c_readRequest(char saddr,char maddr,int nRegs);
+int16_t i2c_readByte(void);
+void IMU_COnfig(char saddr,char maddr,char wdata);
 
 int16_t accXD,accYD,accZD;
 int16_t gyroXD,gyroYD,gyroZD;
+
+int16_t temperature;
 
 double accX,accY,accZ;
 double gyroX,gyroY,gyroZ;
@@ -39,20 +43,39 @@ int main(void)
 	i2c_init();
 	
 	// set default values of these registers in MPU6050
-  i2c_writeByte(IMU_ADW,0x1C,0);
+	// acc FS:+-2g and gryro FS:+-250 deg/s
+  IMU_COnfig(IMU_ADW,0x1C,0);
 	GPIOA->BSRR  = 1<<(5+16);     // LED off
-	i2c_writeByte(IMU_ADW,0x6B,0);
+	IMU_COnfig(IMU_ADW,0x6B,0);
 	GPIOA->BSRR  = 1<<(5+16);
-	i2c_writeByte(IMU_ADW,0x6C,0);
+	IMU_COnfig(IMU_ADW,0x6C,0);
 	GPIOA->BSRR  = 1<<(5+16);
-	i2c_writeByte(IMU_ADW,0x19,0);
+	IMU_COnfig(IMU_ADW,0x19,0);
 	GPIOA->BSRR  = 1<<(5+16);
+	IMU_COnfig(IMU_ADW,0x1B,0);
+	GPIOA->BSRR  = 1<<(5+16);
+	
 		
 	while(1)
 	{
-		//Read z axis of accelerometer to get g value (+1g means the top of IMU is facing up)
-		accZD = i2c_readByte(IMU_ADW,0x3F)<<8|i2c_readByte(IMU_ADW,0x40); //combine bytes: MSBytes<<8|LSBytes
-	  accZ  = (double)accZD/16384.0;     // convert to g, 16384.0 is sensitvity value at +-2g fullscale
+	 // Request 14 registers reading starting from 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L) 
+	 i2c_readRequest(IMU_ADW,0x3B,14);  
+	 accXD = i2c_readByte()<<8|i2c_readByte();  //combine the bytes MSByte<<8|LSByte
+	 accYD = i2c_readByte()<<8|i2c_readByte();  
+	 accZD = i2c_readByte()<<8|i2c_readByte();  
+	 temperature = i2c_readByte()<<8|i2c_readByte(); 
+	 gyroXD = i2c_readByte()<<8|i2c_readByte();
+	 gyroYD = i2c_readByte()<<8|i2c_readByte();
+	 gyroZD = i2c_readByte()<<8|i2c_readByte();
+		
+	 // convert to g
+   accX  = (double)accXD/16384.0;
+	 accY  = (double)accYD/16384.0;
+	 accZ  = (double)accZD/16384.0;
+	 // convert of deg/s 
+	 gyroX = (double)gyroXD/131.0;
+	 gyroY = (double)gyroYD/131.0;
+	 gyroZ = (double)gyroZD/131.0;
 	}
 	
 }
@@ -65,15 +88,21 @@ GPIOB->MODER = 0xFFFFAEBF;  //set pb6and7 to alternative function rm pg305
 GPIOB->AFR[0] =0x44000000;  // AF4 12C on pb6 and 7 rm pg310, uCds pg93
 GPIOB->OTYPER =0xC0;        // pb6 and 7 output open drain rm pg306
 GPIOB->PUPDR = 0x5100;      // pb6 and 7 pull-up, rm pg307
+i2c_resetISR();
 }
 
-int16_t i2c_readByte(char saddr,char maddr)
+void i2c_resetISR(void)
 {
 	//PE set and reset
 	I2C1->CR1 = 0x0000;          // PE cleared, SWresest rm pg1325
-	I2C1->TIMINGR = 0x10320309;  // I2C at 400kHz from uCds
+	I2C1->TIMINGR = 0x10320309;  // I2C at 400kHz from uCds fast mode, as MPU6050 uses fast mode too
   while(I2C1->CR1 & 1<<0);     // wait for at least 3 APB clock cycle b4 set rm pg 1325
   I2C1->CR1|=0x01;             // set PE
+}
+
+void i2c_readRequest(char saddr,char maddr,int nRegs)
+{
+  i2c_resetISR();
 	
   //start and send slave address +write mode
 	I2C1->CR2 = saddr;           // slave address
@@ -89,16 +118,22 @@ int16_t i2c_readByte(char saddr,char maddr)
 	I2C1->TXDR = maddr;          // transmit register address
 	while(!(I2C1->ISR & 1<<6));  // wait until NBTYES is transferred
 	
-	
-	
 	//Start Repeat and send slave address + read mode
 	I2C1->CR2 = saddr;          // slave address
 	I2C1->CR2 |= 1<<10;         // read mode
-	I2C1->CR2 |= 1<<16;         // read 1 byte
-	I2C1->CR2 |= 1<<25;         // automatic end mode ie 1
+	I2C1->CR2 |= nRegs<<16;     // read n number of registers(byte)
+	I2C1->CR2 |= 1<<25;         // automatic end mode ie 1 after NBTYES read
 	I2C1->CR2 |= 1<<13;         // start condition rm pg1327
 	while((I2C1->CR2 & 1<<13)); // wait until start bit is reset, meaning address sent
 	
+
+}
+	
+
+	
+int16_t i2c_readByte(void)
+{
+
 	
 	//read register data
 	while(!(I2C1->ISR & 1<<2));    // wait until receive buffer has data
@@ -113,13 +148,9 @@ int16_t i2c_readByte(char saddr,char maddr)
 	return rdata;
 }
 
-void i2c_writeByte(char saddr,char maddr,char wdata)
+void IMU_COnfig(char saddr,char maddr,char wdata)
 {
-  //PE set and reset
-	I2C1->CR1 = 0x0000;          // PE cleared, SWresest rm pg1325
-	I2C1->TIMINGR = 0x10320309;  // I2C at 400kHz from uCds
-  while(I2C1->CR1 & 1<<0);     // wait for at least 3 APB clock cycle b4 set rm pg 1325
-  I2C1->CR1|=0x01;             // set PE
+  i2c_resetISR();
 	
 	//start and send slave address +write mode
 	I2C1->CR2 = saddr;           // slave address
